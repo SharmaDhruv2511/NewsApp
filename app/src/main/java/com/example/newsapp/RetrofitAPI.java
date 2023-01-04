@@ -10,5 +10,4 @@ public interface RetrofitAPI {
 
     @GET
     Call<NewsModel> getNewsByCategory(@Url String url);
-
 }

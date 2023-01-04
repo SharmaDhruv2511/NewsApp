@@ -23,26 +23,37 @@
                 android:layout_marginRight="15dp"
                 android:gravity="center"
                 android:padding="4dp"
-                android:text="Quick News"
+                android:text="News Hunt 18"
                 android:textAlignment="center"
                 android:textColor="@color/yellow"
                 android:id="@+id/titleofnews"
                 android:textStyle="bold"></TextView>
 
-            <ImageButton
-                android:id="@+id/donationn"
-                android:layout_width="35dp"
-                android:layout_height="35dp"
-                android:layout_alignRight="@+id/titleofnews"
+            <Button
+                android:layout_width="100dp"
+                android:layout_height="39dp"
+                android:text="About Us"
                 android:padding="5dp"
-                android:scaleType="fitCenter"
-                android:src="@drawable/dollar"></ImageButton>
+                android:id="@+id/aboutUs"
+                android:layout_alignParentLeft="true"
+                android:backgroundTint="@color/yellow"
+                ></Button>
 
+            <Button
+                android:layout_width="100dp"
+                android:layout_height="39dp"
+                android:layout_alignParentRight="true"
+                android:text="Query"
+                android:padding="5dp"
+                android:id="@+id/queruButton"
+                android:backgroundTint="@color/yellow"/>
 
         </RelativeLayout>
 
 
+
     </androidx.appcompat.widget.Toolbar>
+
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/Categories"
@@ -81,7 +92,6 @@
         ads:adSize="BANNER"
         ads:adUnitId="ca-app-pub-7515447854449753/7507853761">
     </com.google.android.gms.ads.AdView>
-
 
 
 </RelativeLayout>

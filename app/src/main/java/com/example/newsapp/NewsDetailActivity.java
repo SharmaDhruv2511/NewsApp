@@ -18,6 +18,7 @@ import android.widget.TextView;
 
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
+import com.google.android.gms.ads.FullScreenContentCallback;
 import com.google.android.gms.ads.LoadAdError;
 import com.google.android.gms.ads.MobileAds;
 import com.google.android.gms.ads.initialization.InitializationStatus;
@@ -59,16 +60,6 @@ public class NewsDetailActivity extends AppCompatActivity {
         contentOfNews.setText(content);
         Picasso.get().load(imageURL).into(newsImg);
 
-        newsButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-                    Intent i = new Intent(Intent.ACTION_VIEW);
-                    i.setData(Uri.parse(url));
-                    startActivity(i);
-
-            }
-        });
 
         MobileAds.initialize(this, new OnInitializationCompleteListener() {
             @Override
@@ -80,27 +71,62 @@ public class NewsDetailActivity extends AppCompatActivity {
         AdRequest adRequest = new AdRequest.Builder().build();
         detailAdView.loadAd(adRequest);
 
+        setAds();
 
-
-        InterstitialAd.load(this, "ca-app-pub-7515447854449753/9382459633", adRequest, new InterstitialAdLoadCallback() {
+        newsButton.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onAdFailedToLoad(@NonNull LoadAdError loadAdError) {
-                Log.d(TAG, loadAdError.toString());
-                mInterstitialAd = null;
-            }
+            public void onClick(View v) {
 
-            @Override
-            public void onAdLoaded(@NonNull InterstitialAd interstitialAd) {
-                mInterstitialAd = interstitialAd;
-                Log.i(TAG, "AdLoaded");
+                Intent i = new Intent(Intent.ACTION_VIEW);
+                i.setData(Uri.parse(url));
+                startActivity(i);
+
+                if (mInterstitialAd != null) {
+
+                    mInterstitialAd.show(NewsDetailActivity.this);
+
+                    mInterstitialAd.setFullScreenContentCallback(new FullScreenContentCallback() {
+                        @Override
+                        public void onAdDismissedFullScreenContent() {
+                            super.onAdDismissedFullScreenContent();
+                          //  startActivity(new Intent(MainActivity.this, InterstitialActivity.class));
+                            mInterstitialAd = null;
+                        }
+                    });
+                } else {
+
+                    //startActivity(new Intent(MainActivity.this, InterstitialActivity.class));
+                }
             }
         });
-
-        if(mInterstitialAd != null){
-            mInterstitialAd.show(NewsDetailActivity.this);
-        }else{
-            Log.d("TAG","The interstitial ad is not ready");
-        }
-
     }
+
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        finish();
+    }
+
+    private void setAds() {
+
+        AdRequest adRequest = new AdRequest.Builder().build();
+        InterstitialAd.load(this, "ca-app-pub-7515447854449753/1386707088", adRequest, new InterstitialAdLoadCallback() {
+            @Override
+            public void onAdLoaded(@NonNull InterstitialAd interstitialAd) {
+                // The mInterstitialAd reference will be null until
+                // an ad is loaded.
+                mInterstitialAd = interstitialAd;
+
+            }
+
+            @Override
+            public void onAdFailedToLoad(@NonNull LoadAdError loadAdError) {
+                // Handle the error
+                mInterstitialAd = null;
+            }
+        });
+    }
+
+
 }
