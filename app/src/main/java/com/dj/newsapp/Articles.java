@@ -1,4 +1,4 @@
-package com.example.newsapp;
+package com.dj.newsapp;
 
 public class Articles {
 

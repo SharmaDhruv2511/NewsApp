@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".MainActivity">
+    tools:context="com.dj.newsapp.MainActivity">
 
     <androidx.appcompat.widget.Toolbar
         android:layout_width="match_parent"
@@ -31,7 +31,7 @@
 
             <Button
                 android:layout_width="100dp"
-                android:layout_height="39dp"
+                android:layout_height="48dp"
                 android:text="About Us"
                 android:padding="5dp"
                 android:id="@+id/aboutUs"
@@ -41,7 +41,7 @@
 
             <Button
                 android:layout_width="100dp"
-                android:layout_height="39dp"
+                android:layout_height="48dp"
                 android:layout_alignParentRight="true"
                 android:text="Query"
                 android:padding="5dp"

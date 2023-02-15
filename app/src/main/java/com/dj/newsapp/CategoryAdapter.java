@@ -1,8 +1,7 @@
-package com.example.newsapp;
+package com.dj.newsapp;
 
 import android.app.Activity;
 import android.content.Context;
-import android.content.Intent;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -13,6 +12,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.newsapp.R;
 import com.google.android.gms.ads.AdError;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.FullScreenContentCallback;
@@ -22,41 +22,41 @@ import com.google.android.gms.ads.initialization.InitializationStatus;
 import com.google.android.gms.ads.initialization.OnInitializationCompleteListener;
 import com.google.android.gms.ads.interstitial.InterstitialAd;
 import com.google.android.gms.ads.interstitial.InterstitialAdLoadCallback;
-import com.google.android.material.datepicker.OnSelectionChangedListener;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 
-public class NewsAdapter extends RecyclerView.Adapter<NewsAdapter.ViewHolder> {
+public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.ViewHolder> {
 
-    private ArrayList<Articles> articlesArrayList;
+    private ArrayList<CategoryModel> categoryModels;
     private Context context;
     private InterstitialAd mInterstitialAd;
-    Articles clickedArticles;
+    CategoryModel onClickedCategory;
 
-    public NewsAdapter(ArrayList<Articles> articlesArrayList, MainActivity context) {
-        this.articlesArrayList = articlesArrayList;
+    public CategoryAdapter(ArrayList<CategoryModel> categoryModels, Context context, CategoryClickInterface categoryClickInterface) {
+        this.categoryModels = categoryModels;
         this.context = context;
+        this.categoryClickInterface = categoryClickInterface;
         loadAndManageInterstitialAd();
     }
 
-    public NewsAdapter(ArrayList<Articles> articlesArrayList) {
-    }
+    private CategoryClickInterface categoryClickInterface;
+
+
 
     @NonNull
     @Override
-    public NewsAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.news_item, parent, false);
-        return new NewsAdapter.ViewHolder(view);
+    public CategoryAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.categories_item, parent, false);
+        return new CategoryAdapter.ViewHolder(view);
     }
 
     @Override
-    public void onBindViewHolder(@NonNull NewsAdapter.ViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull CategoryAdapter.ViewHolder holder, int position) {
 
-        Articles articles = articlesArrayList.get(position);
-        holder.subtitleTV.setText(articles.getDescription());
-        holder.titleTV.setText(articles.getTitle());
-        Picasso.get().load(articles.getUrlToImage()).into(holder.newsImg);
+        CategoryModel categoryModel = categoryModels.get(position);
+        holder.categoryText.setText(categoryModel.getCategory());
+        Picasso.get().load(categoryModel.getCategoryImageUrl()).into(holder.categoryImage);
 
         MobileAds.initialize(this.context, new OnInitializationCompleteListener() {
             @Override
@@ -68,12 +68,10 @@ public class NewsAdapter extends RecyclerView.Adapter<NewsAdapter.ViewHolder> {
             @Override
             public void onClick(View v) {
 
-                clickedArticles = articles;
-
                 if(mInterstitialAd != null){
                     mInterstitialAd.show((Activity) context);
                 }else{
-                    goToUpdateActivity();
+                    categoryClickInterface.onCategoryClick(holder.getAdapterPosition());;
                 }
             }
         });
@@ -82,20 +80,23 @@ public class NewsAdapter extends RecyclerView.Adapter<NewsAdapter.ViewHolder> {
 
     @Override
     public int getItemCount() {
-        return articlesArrayList.size();
+        return categoryModels.size();
     }
 
-    public class ViewHolder extends RecyclerView.ViewHolder  {
+    public interface CategoryClickInterface{
+        void onCategoryClick(int position);
+    }
 
-        private TextView titleTV, subtitleTV;
-        private ImageView newsImg;
+    public class ViewHolder extends RecyclerView.ViewHolder {
+
+        private TextView categoryText;
+        private ImageView categoryImage;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
 
-            titleTV = itemView.findViewById(R.id.NewsHeading);
-            subtitleTV = itemView.findViewById(R.id.SubtitleNews);
-            newsImg = itemView.findViewById(R.id.NewsImg);
+            categoryText = itemView.findViewById(R.id.CategoryText);
+            categoryImage = itemView.findViewById(R.id.CategoryImg);
 
         }
     }
@@ -124,7 +125,7 @@ public class NewsAdapter extends RecyclerView.Adapter<NewsAdapter.ViewHolder> {
                                 // Called when ad is dismissed.
                                 // Set the ad reference to null so you don't show the ad a second time.
                                 Log.d("TAG", "Ad dismissed fullscreen content.");
-                                goToUpdateActivity();
+
                                 loadAndManageInterstitialAd();
                             }
 
@@ -159,13 +160,4 @@ public class NewsAdapter extends RecyclerView.Adapter<NewsAdapter.ViewHolder> {
                 });
     }
 
-    private void goToUpdateActivity(){
-        Intent intent = new Intent(context, NewsDetailActivity.class);
-        intent.putExtra("title", clickedArticles.getTitle());
-        intent.putExtra("content", clickedArticles.getContent());
-        intent.putExtra("description", clickedArticles.getDescription());
-        intent.putExtra("image", clickedArticles.getUrlToImage());
-        intent.putExtra("url", clickedArticles.getUrl());
-        context.startActivity(intent);
-    }
 }

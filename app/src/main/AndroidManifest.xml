@@ -15,7 +15,7 @@
         android:theme="@style/Theme.NewsApp"
         tools:targetApi="31">
         <activity
-            android:name=".SplashScreenActivity"
+            android:name="com.dj.newsapp.SplashScreenActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -27,25 +27,25 @@
 
         </activity>
         <activity
-            android:name=".QueryActivity"
+            android:name="com.dj.newsapp.QueryActivity"
             android:exported="false">
             <meta-data
                 android:name="android.app.lib_name"
                 android:value="" />
         </activity>
         <activity
-            android:name=".AboutUS"
+            android:name="com.dj.newsapp.AboutUS"
             android:exported="false">
             <meta-data
                 android:name="android.app.lib_name"
                 android:value="" />
         </activity>
         <activity
-            android:name=".NewsDetailActivity"
+            android:name="com.dj.newsapp.NewsDetailActivity"
             android:exported="false"
-            android:parentActivityName=".MainActivity" />
+            android:parentActivityName="com.dj.newsapp.MainActivity" />
         <activity
-            android:name=".MainActivity"
+            android:name="com.dj.newsapp.MainActivity"
             android:exported="true">
 <!--            <intent-filter>-->
 <!--                <action android:name="android.intent.action.MAIN" />-->

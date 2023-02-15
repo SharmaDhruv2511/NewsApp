@@ -1,7 +1,8 @@
-package com.example.newsapp;
+package com.dj.newsapp;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -12,6 +13,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.newsapp.R;
 import com.google.android.gms.ads.AdError;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.FullScreenContentCallback;
@@ -25,37 +27,36 @@ import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 
-public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.ViewHolder> {
+public class NewsAdapter extends RecyclerView.Adapter<NewsAdapter.ViewHolder> {
 
-    private ArrayList<CategoryModel> categoryModels;
+    private ArrayList<Articles> articlesArrayList;
     private Context context;
     private InterstitialAd mInterstitialAd;
-    CategoryModel onClickedCategory;
+    Articles clickedArticles;
 
-    public CategoryAdapter(ArrayList<CategoryModel> categoryModels, Context context, CategoryClickInterface categoryClickInterface) {
-        this.categoryModels = categoryModels;
+    public NewsAdapter(ArrayList<Articles> articlesArrayList, MainActivity context) {
+        this.articlesArrayList = articlesArrayList;
         this.context = context;
-        this.categoryClickInterface = categoryClickInterface;
         loadAndManageInterstitialAd();
     }
 
-    private CategoryClickInterface categoryClickInterface;
-
-
+    public NewsAdapter(ArrayList<Articles> articlesArrayList) {
+    }
 
     @NonNull
     @Override
-    public CategoryAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.categories_item, parent, false);
-        return new CategoryAdapter.ViewHolder(view);
+    public NewsAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.news_item, parent, false);
+        return new NewsAdapter.ViewHolder(view);
     }
 
     @Override
-    public void onBindViewHolder(@NonNull CategoryAdapter.ViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull NewsAdapter.ViewHolder holder, int position) {
 
-        CategoryModel categoryModel = categoryModels.get(position);
-        holder.categoryText.setText(categoryModel.getCategory());
-        Picasso.get().load(categoryModel.getCategoryImageUrl()).into(holder.categoryImage);
+        Articles articles = articlesArrayList.get(position);
+        holder.subtitleTV.setText(articles.getDescription());
+        holder.titleTV.setText(articles.getTitle());
+        Picasso.get().load(articles.getUrlToImage()).into(holder.newsImg);
 
         MobileAds.initialize(this.context, new OnInitializationCompleteListener() {
             @Override
@@ -67,10 +68,12 @@ public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.ViewHo
             @Override
             public void onClick(View v) {
 
+                clickedArticles = articles;
+
                 if(mInterstitialAd != null){
                     mInterstitialAd.show((Activity) context);
                 }else{
-                    categoryClickInterface.onCategoryClick(holder.getAdapterPosition());;
+                    goToUpdateActivity();
                 }
             }
         });
@@ -79,23 +82,20 @@ public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.ViewHo
 
     @Override
     public int getItemCount() {
-        return categoryModels.size();
+        return articlesArrayList.size();
     }
 
-    public interface CategoryClickInterface{
-        void onCategoryClick(int position);
-    }
+    public class ViewHolder extends RecyclerView.ViewHolder  {
 
-    public class ViewHolder extends RecyclerView.ViewHolder {
-
-        private TextView categoryText;
-        private ImageView categoryImage;
+        private TextView titleTV, subtitleTV;
+        private ImageView newsImg;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
 
-            categoryText = itemView.findViewById(R.id.CategoryText);
-            categoryImage = itemView.findViewById(R.id.CategoryImg);
+            titleTV = itemView.findViewById(R.id.NewsHeading);
+            subtitleTV = itemView.findViewById(R.id.SubtitleNews);
+            newsImg = itemView.findViewById(R.id.NewsImg);
 
         }
     }
@@ -124,7 +124,7 @@ public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.ViewHo
                                 // Called when ad is dismissed.
                                 // Set the ad reference to null so you don't show the ad a second time.
                                 Log.d("TAG", "Ad dismissed fullscreen content.");
-
+                                goToUpdateActivity();
                                 loadAndManageInterstitialAd();
                             }
 
@@ -159,4 +159,13 @@ public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.ViewHo
                 });
     }
 
+    private void goToUpdateActivity(){
+        Intent intent = new Intent(context, NewsDetailActivity.class);
+        intent.putExtra("title", clickedArticles.getTitle());
+        intent.putExtra("content", clickedArticles.getContent());
+        intent.putExtra("description", clickedArticles.getDescription());
+        intent.putExtra("image", clickedArticles.getUrlToImage());
+        intent.putExtra("url", clickedArticles.getUrl());
+        context.startActivity(intent);
+    }
 }
